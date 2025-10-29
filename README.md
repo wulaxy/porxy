@@ -4,5 +4,5 @@
 
 ## 规则文件
 [porxy_rules.js](https://fastly.jsdelivr.net/gh/wulaxy/porxy@main/porxy_rules.js)
-
+## 快速使用
 https://fastly.jsdelivr.net/gh/wulaxy/porxy@main/porxy_rules.js
