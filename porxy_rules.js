@@ -1,5 +1,6 @@
 /***
  * Clash Verge Rev 全局极简分流脚本（六分组 + DNS覆写 + 图标）
+ * 已增强：所有分组默认包含 自选节点 / 直连 / REJECT
  */
 
 const enable = true;
@@ -20,44 +21,44 @@ function main(config) {
     { 
       name: '自选节点', 
       type: 'select', 
-      proxies: ['直连', ...allNodes],
+      proxies: ['直连', 'REJECT', ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png'
     },
     { 
       name: '国内网站', 
       type: 'select', 
-      proxies: ['直连', ...allNodes],
+      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png'
     },
     { 
       name: '国外AI', 
       type: 'select', 
-      proxies: ['自选节点', ...allNodes],
+      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png'
     },
     { 
       name: 'YouTube', 
       type: 'select', 
-      proxies: ['自选节点', ...allNodes],
+      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png'
     },
     { 
       name: 'Telegram', 
       type: 'select', 
-      proxies: ['自选节点', ...allNodes],
+      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png'
     },
     { 
       name: '广告追踪', 
       type: 'select', 
-      proxies: ['REJECT', ...allNodes],
+      proxies: ['REJECT', '自选节点', '直连', ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Advertising.png'
     },
   ];
 
   // ====== 极简规则 ======
   config['rules'] = [
-    // 广告追踪（REJECT）
+    // 广告追踪
     'GEOSITE,category-ads-all,广告追踪',
     'DOMAIN-KEYWORD,admarvel,广告追踪',
     'DOMAIN-KEYWORD,admaster,广告追踪',
@@ -97,7 +98,7 @@ function main(config) {
     'GEOSITE,telegram,Telegram',
     'GEOIP,telegram,Telegram',
 
-    // 国内网站（DIRECT）
+    // 国内网站
     'GEOSITE,cn,国内网站',
     'GEOIP,CN,国内网站',
     'DOMAIN,safebrowsing.urlsec.qq.com,国内网站',
@@ -145,7 +146,6 @@ function main(config) {
     'DOMAIN-SUFFIX,kwaicdn.net,国内网站',
     'DOMAIN-KEYWORD,kuaishou,国内网站',
     'DOMAIN-KEYWORD,kwai,国内网站',
-
 
     // 自选节点
     'DOMAIN-SUFFIX,services.googleapis.cn,自选节点',
