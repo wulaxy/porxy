@@ -1,8 +1,4 @@
-/***
- * Clash Verge Rev 全局极简分流脚本（六分组 + DNS覆写 + 图标）
- * 已增强：所有分组默认包含 自选节点 / 直连 / REJECT
- */
-
+//made wuLaxy with GPT
 const enable = true;
 
 function main(config) {
@@ -10,180 +6,217 @@ function main(config) {
 
   const allNodes = config?.proxies?.map(p => p.name) || [];
 
-  // 添加直连节点
   if (!allNodes.includes('直连')) {
     config.proxies = config.proxies || [];
     config.proxies.push({ name: '直连', type: 'direct', udp: true });
   }
 
-  // ====== 六个极简分组（带图标） ======
+  const getNodesByKeywords = (keywords) => {
+    return allNodes.filter(p => keywords.some(k => p.toLowerCase().includes(k.toLowerCase())));
+  };
+
+  const getRate = (nodeName) => {
+    const yuanMatch = nodeName.match(/(\d+(\.\d+)?)元/);
+    if (yuanMatch) return parseFloat(yuanMatch[1]) * 10;
+    const xMatch = nodeName.match(/(\d+(\.\d+)?)x/i);
+    if (xMatch) return parseFloat(xMatch[1]);
+    const rateMatch = nodeName.match(/(\d+(\.\d+)?)倍率?/);
+    if (rateMatch) return parseFloat(rateMatch[1]);
+    return 1.0;
+  };
+
+  const lowRateNodes = allNodes.filter(p => getRate(p) < 1.0);
+  const medRateNodes = allNodes.filter(p => getRate(p) >= 1.0 && getRate(p) <= 2.0);
+  const highRateNodes = allNodes.filter(p => getRate(p) > 2.0);
+
+  const countryConfigs = [
+    { name: '韩国节点', keywords: ['韩国', 'KR', 'Korea'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/South_Korea.png' },
+    { name: '美国节点', keywords: ['美国', 'US', 'United States'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png' },
+    { name: '日本节点', keywords: ['日本', 'JP', 'Japan'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png' },
+    { name: '台湾节点', keywords: ['台湾', 'TW', 'Taiwan'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png' },
+    { name: '土耳其节点', keywords: ['土耳其', 'TR', 'Turkey'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Turkey.png' },
+    { name: '香港节点', keywords: ['香港', 'HK', 'Hong Kong'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png' },
+    { name: '新加坡节点', keywords: ['新加坡', 'SG', 'Singapore'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png' },
+    { name: '英国节点', keywords: ['英国', 'UK', 'United Kingdom'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_Kingdom.png' }
+  ];
+
+  const countryGroups = countryConfigs.map(c => c.name);
+  const rateGroups = ['低倍节点', '中倍节点', '高倍节点'];
+  const baseProxies = ['自选节点', 'REJECT']; // 移除基础列表中的直连，因为下面会手动补位
+  const commonProxies = [...baseProxies, ...rateGroups, ...countryGroups, ...allNodes];
+
   config['proxy-groups'] = [
     { 
       name: '自选节点', 
       type: 'select', 
-      proxies: ['直连', 'REJECT', ...allNodes],
+      proxies: ['直连', 'REJECT', ...rateGroups, ...countryGroups, ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png'
     },
     { 
       name: '国内网站', 
       type: 'select', 
-      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
+      proxies: ['直连', '自选节点', 'REJECT', ...rateGroups, ...countryGroups, ...allNodes],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png'
     },
     { 
       name: '国外AI', 
       type: 'select', 
-      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
+      proxies: ['直连', ...commonProxies],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png'
     },
     { 
       name: 'YouTube', 
       type: 'select', 
-      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
+      proxies: ['直连', ...commonProxies],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png'
+    },
+    { 
+      name: '流媒体', 
+      type: 'select', 
+      proxies: ['直连', ...commonProxies],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Streaming.png'
     },
     { 
       name: 'Telegram', 
       type: 'select', 
-      proxies: ['自选节点', '直连', 'REJECT', ...allNodes],
+      proxies: ['直连', ...commonProxies],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png'
+    },
+    { 
+      name: 'Emby', 
+      type: 'select', 
+      proxies: ['直连', ...commonProxies],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Emby.png'
+    },
+    { 
+      name: 'Apple', 
+      type: 'select', 
+      proxies: ['直连', ...commonProxies],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Apple.png'
+    },
+    { 
+      name: 'GitHub', 
+      type: 'select', 
+      proxies: ['直连', ...commonProxies],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/GitHub.png'
+    },
+    { 
+      name: 'Steam/Epic', 
+      type: 'select', 
+      proxies: ['直连', ...commonProxies],
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Steam.png'
     },
     { 
       name: '广告追踪', 
       type: 'select', 
-      proxies: ['REJECT', '自选节点', '直连', ...allNodes],
+      proxies: ['REJECT', '直连', ...commonProxies],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Advertising.png'
     },
+    {
+      name: '低倍节点',
+      type: 'url-test',
+      proxies: lowRateNodes.length > 0 ? lowRateNodes : ['直连'],
+      url: 'http://www.gstatic.com/generate_204',
+      interval: 300,
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png'
+    },
+    {
+      name: '中倍节点',
+      type: 'url-test',
+      proxies: medRateNodes.length > 0 ? medRateNodes : ['直连'],
+      url: 'http://www.gstatic.com/generate_204',
+      interval: 300,
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png'
+    },
+    {
+      name: '高倍节点',
+      type: 'url-test',
+      proxies: highRateNodes.length > 0 ? highRateNodes : ['直连'],
+      url: 'http://www.gstatic.com/generate_204',
+      interval: 300,
+      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png'
+    },
+    ...countryConfigs.map(c => ({
+      name: c.name,
+      type: 'url-test',
+      proxies: getNodesByKeywords(c.keywords).length > 0 ? getNodesByKeywords(c.keywords) : ['直连'],
+      url: 'http://www.gstatic.com/generate_204',
+      interval: 300,
+      icon: c.icon
+    })),
   ];
 
-  // ====== 极简规则 ======
   config['rules'] = [
-    // 广告追踪
+    'IP-CIDR,192.168.0.0/16,DIRECT',
+    'IP-CIDR,10.0.0.0/8,DIRECT',
+    'IP-CIDR,172.16.0.0/12,DIRECT',
+    'IP-CIDR,127.0.0.0/8,DIRECT',
+    'DOMAIN-KEYWORD,emby,Emby',
+    'DOMAIN-KEYWORD,plex,Emby',
+    'DOMAIN-KEYWORD,jellyfin,Emby',
+    'DOMAIN-SUFFIX,emby.media,Emby',
+    'DOMAIN-SUFFIX,emby.tv,Emby',
+    'DOMAIN-SUFFIX,plex.tv,Emby',
+    'DOMAIN-SUFFIX,jmsooo.com,Emby',
+    'DOMAIN-SUFFIX,misakaf.org,Emby',
     'GEOSITE,category-ads-all,广告追踪',
-    'DOMAIN-KEYWORD,admarvel,广告追踪',
-    'DOMAIN-KEYWORD,admaster,广告追踪',
-    'DOMAIN-KEYWORD,adsage,广告追踪',
-    'DOMAIN-KEYWORD,adsmogo,广告追踪',
-    'DOMAIN-KEYWORD,adsrvmedia,广告追踪',
-    'DOMAIN-KEYWORD,adwords,广告追踪',
     'DOMAIN-KEYWORD,adservice,广告追踪',
-    'DOMAIN-SUFFIX,appsflyer.com,广告追踪',
-    'DOMAIN-KEYWORD,domob,广告追踪',
     'DOMAIN-SUFFIX,doubleclick.net,广告追踪',
-    'DOMAIN-KEYWORD,duomeng,广告追踪',
-    'DOMAIN-KEYWORD,dwtrack,广告追踪',
-    'DOMAIN-KEYWORD,guanggao,广告追踪',
-    'DOMAIN-KEYWORD,lianmeng,广告追踪',
+    'DOMAIN-SUFFIX,googlesyndication.com,广告追踪',
+    'DOMAIN-SUFFIX,googleadservices.com,广告追踪',
     'DOMAIN-SUFFIX,mmstat.com,广告追踪',
-    'DOMAIN-KEYWORD,mopub,广告追踪',
-    'DOMAIN-KEYWORD,omgmta,广告追踪',
-    'DOMAIN-KEYWORD,openx,广告追踪',
-    'DOMAIN-KEYWORD,partnerad,广告追踪',
-    'DOMAIN-KEYWORD,pingfore,广告追踪',
-    'DOMAIN-KEYWORD,supersonicads,广告追踪',
-    'DOMAIN-KEYWORD,uedas,广告追踪',
-    'DOMAIN-KEYWORD,umeng,广告追踪',
-    'DOMAIN-KEYWORD,usage,广告追踪',
+    'DOMAIN-SUFFIX,appsflyer.com,广告追踪',
     'DOMAIN-SUFFIX,vungle.com,广告追踪',
-
-    // 国外AI
+    'DOMAIN-SUFFIX,adj.st,广告追踪',
+    'DOMAIN-SUFFIX,adjust.com,广告追踪',
     'GEOSITE,openai,国外AI',
+    'GEOSITE,github,GitHub',
+    'GEOSITE,steam,Steam/Epic',
+    'GEOSITE,epicgames,Steam/Epic',
+    'GEOSITE,ea,Steam/Epic',
     'GEOSITE,anthropic,国外AI',
     'GEOSITE,perplexity,国外AI',
-
-    // YouTube
+    'GEOSITE,google,国外AI',
     'GEOSITE,youtube,YouTube',
-
-    // Telegram
     'GEOSITE,telegram,Telegram',
     'GEOIP,telegram,Telegram',
-
-    // 国内网站
+    'GEOSITE,netflix,流媒体',
+    'GEOSITE,disney,流媒体',
+    'GEOSITE,spotify,流媒体',
+    'GEOSITE,hbo,流媒体',
+    'GEOSITE,primevideo,流媒体',
+    'DOMAIN-SUFFIX,netflix.com,流媒体',
+    'DOMAIN-SUFFIX,netflix.net,流媒体',
+    'DOMAIN-SUFFIX,nflximg.net,流媒体',
+    'DOMAIN-SUFFIX,nflxvideo.net,流媒体',
+    'DOMAIN-SUFFIX,nflxso.net,流媒体',
+    'DOMAIN-SUFFIX,nflxext.com,流媒体',
+    'DOMAIN-SUFFIX,disneyplus.com,流媒体',
+    'DOMAIN-SUFFIX,disney-portal.com,流媒体',
+    'DOMAIN-SUFFIX,disney.com,流媒体',
+    'DOMAIN-SUFFIX,dssott.com,流媒体',
+    'DOMAIN-SUFFIX,spotify.com,流媒体',
+    'DOMAIN-SUFFIX,scdn.co,流媒体',
+    'GEOSITE,apple,Apple',
+    'DOMAIN-SUFFIX,apple.com,Apple',
+    'DOMAIN-SUFFIX,icloud.com,Apple',
+    'DOMAIN-SUFFIX,mzstatic.com,Apple',
+    'DOMAIN-SUFFIX,itunes.apple.com,Apple',
+    'IP-ASN,15169,国外AI',
+    'IP-ASN,16509,国外AI',
+    'IP-ASN,14061,国外AI',
+    'IP-ASN,46489,国外AI',
     'GEOSITE,cn,国内网站',
     'GEOIP,CN,国内网站',
-    'DOMAIN,safebrowsing.urlsec.qq.com,国内网站',
-    'DOMAIN,safebrowsing.googleapis.com,国内网站',
-    'DOMAIN-SUFFIX,mzstatic.com,国内网站',
-    'DOMAIN-SUFFIX,itunes.apple.com,国内网站',
-    'DOMAIN-SUFFIX,icloud.com,国内网站',
-    'DOMAIN-SUFFIX,icloud-content.com,国内网站',
-    'DOMAIN-SUFFIX,me.com,国内网站',
-    'DOMAIN-SUFFIX,aaplimg.com,国内网站',
-    'DOMAIN-SUFFIX,apple.com,国内网站',
-    'DOMAIN-SUFFIX,126.com,国内网站',
-    'DOMAIN-SUFFIX,163.com,国内网站',
-    'DOMAIN-SUFFIX,taobao.com,国内网站',
-    'DOMAIN-SUFFIX,qq.com,国内网站',
-    'DOMAIN-SUFFIX,bilibili.com,国内网站',
-    'DOMAIN-SUFFIX,zhihu.com,国内网站',
-    'DOMAIN-SUFFIX,csdn.net,国内网站',
-    'DOMAIN-SUFFIX,mi.com,国内网站',
-    'DOMAIN-SUFFIX,weibo.com,国内网站',
-    'DOMAIN-SUFFIX,douyin.com,国内网站',
-    'DOMAIN-SUFFIX,amemv.com,国内网站',
-    'DOMAIN-SUFFIX,bytecdn.cn,国内网站',
-    'DOMAIN-SUFFIX,byteimg.com,国内网站',
-    'DOMAIN-SUFFIX,bytedance.com,国内网站',
-    'DOMAIN-SUFFIX,byted-static.com,国内网站',
-    'DOMAIN-SUFFIX,bytedns.net,国内网站',
-    'DOMAIN-SUFFIX,bytednsdoc.com,国内网站',
-    'DOMAIN-SUFFIX,bytedance.net,国内网站',
-    'DOMAIN-SUFFIX,byted-api.com,国内网站',
-    'DOMAIN-SUFFIX,iesdouyin.com,国内网站',
-    'DOMAIN-SUFFIX,snssdk.com,国内网站',
-    'DOMAIN-SUFFIX,pstatp.com,国内网站',
-    'DOMAIN-SUFFIX,toutiao.com,国内网站',
-    'DOMAIN-SUFFIX,toutiaoimg.com,国内网站',
-    'DOMAIN-SUFFIX,toutiaostatic.com,国内网站',
-    'DOMAIN-KEYWORD,douyin,国内网站',
-    'DOMAIN-KEYWORD,toutiao,国内网站',
-    'DOMAIN-SUFFIX,kuaishou.com,国内网站',
-    'DOMAIN-SUFFIX,ksapisrv.com,国内网站',
-    'DOMAIN-SUFFIX,yximgs.com,国内网站',
-    'DOMAIN-SUFFIX,kwai.com,国内网站',
-    'DOMAIN-SUFFIX,kwimgs.com,国内网站',
-    'DOMAIN-SUFFIX,kwaicdn.com,国内网站',
-    'DOMAIN-SUFFIX,kwaicdn.net,国内网站',
-    'DOMAIN-KEYWORD,kuaishou,国内网站',
-    'DOMAIN-KEYWORD,kwai,国内网站',
-
-    // 自选节点
-    'DOMAIN-SUFFIX,services.googleapis.cn,自选节点',
-    'DOMAIN-SUFFIX,xn--ngstr-lra8j.com,自选节点',
-    'DOMAIN,developer.apple.com,自选节点',
-    'DOMAIN-SUFFIX,digicert.com,自选节点',
-    'DOMAIN,ocsp.apple.com,自选节点',
-    'DOMAIN,ocsp.comodoca.com,自选节点',
-    'DOMAIN,ocsp.usertrust.com,自选节点',
-    'DOMAIN,ocsp.sectigo.com,自选节点',
-    'DOMAIN,ocsp.verisign.net,自选节点',
-    'DOMAIN-SUFFIX,apple-dns.net,自选节点',
-    'DOMAIN,testflight.apple.com,自选节点',
-    'DOMAIN,sandbox.itunes.apple.com,自选节点',
-    'DOMAIN,itunes.apple.com,自选节点',
-    'DOMAIN-SUFFIX,apps.apple.com,自选节点',
-    'DOMAIN-SUFFIX,blobstore.apple.com,自选节点',
-    'DOMAIN,cvws.icloud-content.com,自选节点',
-    'DOMAIN-KEYWORD,amazon,自选节点',
-    'DOMAIN-KEYWORD,google,自选节点',
-    'DOMAIN-KEYWORD,gmail,自选节点',
-    'DOMAIN-KEYWORD,facebook,自选节点',
-    'DOMAIN-SUFFIX,fb.me,自选节点',
-    'DOMAIN-SUFFIX,fbcdn.net,自选节点',
-    'DOMAIN-KEYWORD,twitter,自选节点',
-    'DOMAIN-KEYWORD,instagram,自选节点',
-    'DOMAIN-KEYWORD,dropbox,自选节点',
-    'DOMAIN-SUFFIX,twimg.com,自选节点',
-    'DOMAIN-KEYWORD,blogspot,自选节点',
-    'DOMAIN-KEYWORD,whatsapp,自选节点',
-
-    // 兜底
     'MATCH,自选节点',
   ];
 
-  // ====== DNS覆写 ======
-  const chinaDNS = ['119.29.29.29', '223.5.5.5'];
-  const foreignDNS = ['https://120.53.53.53/dns-query', 'https://223.5.5.5/dns-query'];
+  const chinaDNS = ['223.5.5.5', '119.29.29.29'];
+  const foreignDNS = [
+    'https://1.1.1.1/dns-query',
+    'https://8.8.8.8/dns-query',
+    'https://dns.google/dns-query'
+  ];
 
   config['dns'] = {
     enable: true,
@@ -195,12 +228,23 @@ function main(config) {
     'respect-rules': true,
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
-    'fake-ip-filter': ['*', '+.lan', '+.local', '+.market.xiaomi.com'],
-    nameserver: [...foreignDNS],
+    'fake-ip-filter': [
+      '+.lan',
+      '+.local',
+      'time.windows.com',
+      'ntp.*'
+    ],
+    nameserver: [...chinaDNS],
     'proxy-server-nameserver': [...foreignDNS],
     'nameserver-policy': {
-      'geosite:private': 'system',
-      'geosite:cn,steam@cn,category-games@cn,microsoft@cn,apple@cn': chinaDNS,
+      'geosite:cn': chinaDNS,
+      'geosite:youtube': foreignDNS,
+      'geosite:openai': foreignDNS,
+      'geosite:github': foreignDNS,
+      'geosite:telegram': foreignDNS,
+      'geosite:netflix,disney,spotify': foreignDNS,
+      'geosite:steam,epicgames,ea': foreignDNS,
+      'geosite:private': 'system'
     },
   };
 
