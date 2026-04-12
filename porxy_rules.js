@@ -202,16 +202,16 @@ function main(config) {
     'DOMAIN-SUFFIX,icloud.com,Apple',
     'DOMAIN-SUFFIX,mzstatic.com,Apple',
     'DOMAIN-SUFFIX,itunes.apple.com,Apple',
-    'IP-ASN,15169,国外AI',
-    'IP-ASN,16509,国外AI',
-    'IP-ASN,14061,国外AI',
-    'IP-ASN,46489,国外AI',
     'GEOSITE,cn,国内网站',
     'GEOIP,CN,国内网站',
     'MATCH,自选节点',
   ];
 
   const chinaDNS = ['223.5.5.5', '119.29.29.29'];
+  const secureChinaDoH = [
+    'https://dns.alidns.com/dns-query',
+    'https://doh.pub/dns-query'
+  ];
   const foreignDNS = [
     'https://1.1.1.1/dns-query',
     'https://8.8.8.8/dns-query',
@@ -221,7 +221,7 @@ function main(config) {
   config['dns'] = {
     enable: true,
     listen: ':1053',
-    ipv6: true,
+    ipv6: false,
     'prefer-h3': true,
     'use-hosts': true,
     'use-system-hosts': true,
@@ -232,10 +232,13 @@ function main(config) {
       '+.lan',
       '+.local',
       'time.windows.com',
-      'ntp.*'
+      'ntp.*',
+      '+.msftncsi.com',
+      'msftconnecttest.com',
+      '+.msftconnecttest.com'
     ],
-    nameserver: [...foreignDNS],
-    'proxy-server-nameserver': [...foreignDNS],
+    nameserver: [...secureChinaDoH, ...foreignDNS],
+    'proxy-server-nameserver': [...secureChinaDoH],
     'nameserver-policy': {
       'geosite:cn': chinaDNS,
       'geosite:steam,epicgames,ea,apple,microsoft': chinaDNS,
