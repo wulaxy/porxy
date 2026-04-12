@@ -234,16 +234,12 @@ function main(config) {
       'time.windows.com',
       'ntp.*'
     ],
-    nameserver: [...chinaDNS],
+    nameserver: [...foreignDNS],
     'proxy-server-nameserver': [...foreignDNS],
     'nameserver-policy': {
       'geosite:cn': chinaDNS,
-      'geosite:youtube': foreignDNS,
-      'geosite:openai': foreignDNS,
-      'geosite:github': foreignDNS,
-      'geosite:telegram': foreignDNS,
-      'geosite:netflix,disney,spotify': foreignDNS,
-      'geosite:steam,epicgames,ea': foreignDNS,
+      'geosite:steam,epicgames,ea,apple,microsoft': chinaDNS,
+      'geosite:youtube,openai,github,telegram,netflix,disney,spotify': foreignDNS,
       'geosite:private': 'system'
     },
   };
