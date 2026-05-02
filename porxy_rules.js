@@ -1,4 +1,5 @@
-//made wuLaxy with GPT
+// Made by WuLaxy with GPT & Gemini
+
 const enable = true;
 
 function main(config) {
@@ -42,209 +43,96 @@ function main(config) {
 
   const countryGroups = countryConfigs.map(c => c.name);
   const rateGroups = ['低倍节点', '中倍节点', '高倍节点'];
-  const baseProxies = ['自选节点', 'REJECT']; // 移除基础列表中的直连，因为下面会手动补位
+  const baseProxies = ['自选节点', 'REJECT'];
   const commonProxies = [...baseProxies, ...rateGroups, ...countryGroups, ...allNodes];
 
   config['proxy-groups'] = [
-    { 
-      name: '自选节点', 
-      type: 'select', 
-      proxies: ['直连', 'REJECT', ...rateGroups, ...countryGroups, ...allNodes],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png'
-    },
-    { 
-      name: '国内网站', 
-      type: 'select', 
-      proxies: ['直连', '自选节点', 'REJECT', ...rateGroups, ...countryGroups, ...allNodes],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png'
-    },
-    { 
-      name: '国外AI', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png'
-    },
-    { 
-      name: 'YouTube', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png'
-    },
-    { 
-      name: '流媒体', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Streaming.png'
-    },
-    { 
-      name: 'Telegram', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png'
-    },
-    { 
-      name: 'Emby', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Emby.png'
-    },
-    { 
-      name: 'Apple', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Apple.png'
-    },
-    { 
-      name: 'GitHub', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/GitHub.png'
-    },
-    { 
-      name: 'Steam/Epic', 
-      type: 'select', 
-      proxies: ['直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Steam.png'
-    },
-    { 
-      name: '广告追踪', 
-      type: 'select', 
-      proxies: ['REJECT', '直连', ...commonProxies],
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Advertising.png'
-    },
-    {
-      name: '低倍节点',
-      type: 'url-test',
-      proxies: lowRateNodes.length > 0 ? lowRateNodes : ['直连'],
-      url: 'http://www.gstatic.com/generate_204',
-      interval: 300,
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png'
-    },
-    {
-      name: '中倍节点',
-      type: 'url-test',
-      proxies: medRateNodes.length > 0 ? medRateNodes : ['直连'],
-      url: 'http://www.gstatic.com/generate_204',
-      interval: 300,
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png'
-    },
-    {
-      name: '高倍节点',
-      type: 'url-test',
-      proxies: highRateNodes.length > 0 ? highRateNodes : ['直连'],
-      url: 'http://www.gstatic.com/generate_204',
-      interval: 300,
-      icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png'
-    },
-    ...countryConfigs.map(c => ({
-      name: c.name,
-      type: 'url-test',
-      proxies: getNodesByKeywords(c.keywords).length > 0 ? getNodesByKeywords(c.keywords) : ['直连'],
-      url: 'http://www.gstatic.com/generate_204',
-      interval: 300,
-      icon: c.icon
-    })),
+    { name: '自选节点', type: 'select', proxies: ['直连', 'REJECT', ...rateGroups, ...countryGroups, ...allNodes], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png' },
+    { name: '国内网站', type: 'select', proxies: ['直连', '自选节点', 'REJECT'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png' },
+    { name: '国外AI', type: 'select', proxies: ['自选节点', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png' },
+    { name: 'YouTube', type: 'select', proxies: ['自选节点', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png' },
+    { name: '流媒体', type: 'select', proxies: ['自选节点', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Streaming.png' },
+    { name: 'Telegram', type: 'select', proxies: ['自选节点', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Telegram.png' },
+    { name: 'Emby', type: 'select', proxies: ['直连', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Emby.png' },
+    { name: 'Apple', type: 'select', proxies: ['直连', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Apple.png' },
+    { name: 'GitHub', type: 'select', proxies: ['自选节点', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/GitHub.png' },
+    { name: 'Steam/Epic', type: 'select', proxies: ['直连', ...commonProxies], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Steam.png' },
+    { name: '广告追踪', type: 'select', proxies: ['REJECT', '直连'], icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Advertising.png' },
+    { name: '低倍节点', type: 'url-test', proxies: lowRateNodes.length > 0 ? lowRateNodes : ['直连'], url: 'http://www.gstatic.com/generate_204', interval: 300, icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png' },
+    { name: '中倍节点', type: 'url-test', proxies: medRateNodes.length > 0 ? medRateNodes : ['直连'], url: 'http://www.gstatic.com/generate_204', interval: 300, icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png' },
+    { name: '高倍节点', type: 'url-test', proxies: highRateNodes.length > 0 ? highRateNodes : ['直连'], url: 'http://www.gstatic.com/generate_204', interval: 300, icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Speedtest.png' },
+    ...countryConfigs.map(c => ({ name: c.name, type: 'url-test', proxies: getNodesByKeywords(c.keywords).length > 0 ? getNodesByKeywords(c.keywords) : ['直连'], url: 'http://www.gstatic.com/generate_204', interval: 300, icon: c.icon })),
   ];
 
+  // 1. 开启嗅探功能 (Sniffer) - 解决抖音/B站/CDN识别
+  config['sniffer'] = {
+    enable: true,
+    sniff: {
+      TLS: { 'proxy-name': ['自选节点'], 'ports': [443, 8443] },
+      HTTP: { 'proxy-name': ['自选节点'], 'ports': [80, 8080] },
+      QUIC: { 'proxy-name': ['自选节点'], 'ports': [443] }
+    },
+    'force-domain': ['google.com']
+  };
+
+  // 2. 优化分流规则 - 逻辑：局域网 -> 广告 -> 大厂白名单 -> 社交黑名单 -> 剩余国内IP -> 全部代理
   config['rules'] = [
     'IP-CIDR,192.168.0.0/16,DIRECT',
     'IP-CIDR,10.0.0.0/8,DIRECT',
     'IP-CIDR,172.16.0.0/12,DIRECT',
     'IP-CIDR,127.0.0.0/8,DIRECT',
+    'GEOSITE,category-ads-all,广告追踪',
+    
+    // 明确的大厂白名单，保证抖音B站直连
+    'GEOSITE,bilibili,国内网站',
+    'GEOSITE,bytedance,国内网站', 
+    'GEOSITE,cn,国内网站',
+    
+    // 媒体与社交黑名单
     'DOMAIN-KEYWORD,emby,Emby',
     'DOMAIN-KEYWORD,plex,Emby',
-    'DOMAIN-KEYWORD,jellyfin,Emby',
-    'DOMAIN-SUFFIX,emby.media,Emby',
-    'DOMAIN-SUFFIX,emby.tv,Emby',
-    'DOMAIN-SUFFIX,plex.tv,Emby',
-    'DOMAIN-SUFFIX,jmsooo.com,Emby',
-    'DOMAIN-SUFFIX,misakaf.org,Emby',
-    'GEOSITE,category-ads-all,广告追踪',
-    'DOMAIN-KEYWORD,adservice,广告追踪',
-    'DOMAIN-SUFFIX,doubleclick.net,广告追踪',
-    'DOMAIN-SUFFIX,googlesyndication.com,广告追踪',
-    'DOMAIN-SUFFIX,googleadservices.com,广告追踪',
-    'DOMAIN-SUFFIX,mmstat.com,广告追踪',
-    'DOMAIN-SUFFIX,appsflyer.com,广告追踪',
-    'DOMAIN-SUFFIX,vungle.com,广告追踪',
-    'DOMAIN-SUFFIX,adj.st,广告追踪',
-    'DOMAIN-SUFFIX,adjust.com,广告追踪',
     'GEOSITE,openai,国外AI',
     'GEOSITE,github,GitHub',
-    'GEOSITE,steam,Steam/Epic',
-    'GEOSITE,epicgames,Steam/Epic',
-    'GEOSITE,ea,Steam/Epic',
-    'GEOSITE,anthropic,国外AI',
-    'GEOSITE,perplexity,国外AI',
-    'GEOSITE,google,国外AI',
     'GEOSITE,youtube,YouTube',
     'GEOSITE,telegram,Telegram',
-    'GEOIP,telegram,Telegram',
     'GEOSITE,netflix,流媒体',
     'GEOSITE,disney,流媒体',
     'GEOSITE,spotify,流媒体',
-    'GEOSITE,hbo,流媒体',
-    'GEOSITE,primevideo,流媒体',
-    'DOMAIN-SUFFIX,netflix.com,流媒体',
-    'DOMAIN-SUFFIX,netflix.net,流媒体',
-    'DOMAIN-SUFFIX,nflximg.net,流媒体',
-    'DOMAIN-SUFFIX,nflxvideo.net,流媒体',
-    'DOMAIN-SUFFIX,nflxso.net,流媒体',
-    'DOMAIN-SUFFIX,nflxext.com,流媒体',
-    'DOMAIN-SUFFIX,disneyplus.com,流媒体',
-    'DOMAIN-SUFFIX,disney-portal.com,流媒体',
-    'DOMAIN-SUFFIX,disney.com,流媒体',
-    'DOMAIN-SUFFIX,dssott.com,流媒体',
-    'DOMAIN-SUFFIX,spotify.com,流媒体',
-    'DOMAIN-SUFFIX,scdn.co,流媒体',
     'GEOSITE,apple,Apple',
-    'DOMAIN-SUFFIX,apple.com,Apple',
-    'DOMAIN-SUFFIX,icloud.com,Apple',
-    'DOMAIN-SUFFIX,mzstatic.com,Apple',
-    'DOMAIN-SUFFIX,itunes.apple.com,Apple',
-    'GEOSITE,cn,国内网站',
+    'GEOSITE,steam,Steam/Epic',
+    
+    // 强制地理位置识别
+    'GEOSITE,geolocation-!cn,自选节点',
+    
+    // 剩余国内 IP 兜底（如果没匹配上大厂名单但服务器在中国，依然直连）
     'GEOIP,CN,国内网站',
+    
+    // 最终防御：所有未知的（包括泄露测试网站）全部强制代理
     'MATCH,自选节点',
   ];
 
-  const chinaDNS = ['223.5.5.5', '119.29.29.29'];
-  const secureChinaDoH = [
-    'https://dns.alidns.com/dns-query',
-    'https://doh.pub/dns-query'
-  ];
-  const foreignDNS = [
-    'https://1.1.1.1/dns-query',
-    'https://8.8.8.8/dns-query',
-    'https://dns.google/dns-query'
-  ];
-
+  // 3. DNS 终极防泄露配置
   config['dns'] = {
     enable: true,
     listen: ':1053',
     ipv6: false,
     'prefer-h3': true,
-    'use-hosts': true,
-    'use-system-hosts': true,
-    'respect-rules': true,
+    'respect-rules': true, // 必须：让 DNS 跟随规则
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
-    'fake-ip-filter': [
-      '+.lan',
-      '+.local',
-      'time.windows.com',
-      'ntp.*',
-      '+.msftncsi.com',
-      'msftconnecttest.com',
-      '+.msftconnecttest.com'
-    ],
-    nameserver: [...secureChinaDoH, ...foreignDNS],
-    'proxy-server-nameserver': [...secureChinaDoH],
+    'fake-ip-filter': ['+.lan', '+.local', 'localhost', '+.msftconnecttest.com', 'time.windows.com'],
+    
+    // 默认 nameserver 只给国外 DoH，绝不问运营商
+    nameserver: ['https://1.1.1.1/dns-query', 'https://8.8.8.8/dns-query'],
+    
+    'proxy-server-nameserver': ['223.5.5.5', '119.29.29.29'],
+    
     'nameserver-policy': {
-      'geosite:cn': chinaDNS,
-      'geosite:steam,epicgames,ea,apple,microsoft': chinaDNS,
-      'geosite:youtube,openai,github,telegram,netflix,disney,spotify': foreignDNS,
-      'geosite:private': 'system'
-    },
+      // 只有这些确定的国内大厂才允许问国内 DNS
+      'geosite:cn,private,bilibili,bytedance,steam,apple,microsoft': ['223.5.5.5', '119.29.29.29'],
+      // 其余的一律强制走国外加密解析
+      'geosite:google,youtube,openai,telegram,netflix,geolocation-!cn': ['https://dns.google/dns-query']
+    }
   };
 
   return config;
